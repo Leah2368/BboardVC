@@ -1,16 +1,18 @@
-// Microbit Bluetooth documentation: https://lancaster-university.github.io/microbit-docs/resources/bluetooth/bluetooth_profile.html
-
 let targetDevice = null;
 let ioService = null;
 let pwmCharacteristic = null;
 let ledService = null;
 let ledCharacteristic = null;
+let ioConfiguration = null;
+let ioPinData = null;
 
 let paired = false;
 // let pinAdCharacteristic = null;
 
 const IO_PIN_SERVICE = "E95D127B-251D-470A-A062-FA1922DFA9A8".toLowerCase();
 const PWM_CHARACTERISTIC = "E95DD822-251D-470A-A062-FA1922DFA9A8".toLowerCase();
+const PIN_IO_CONFIGURATION = "E95DB9FE-251D-470A-A062FA1922DFA9A8".toLowerCase();
+const IO_PIN_DATA = "E95D8D00-251D-470A-A062FA1922DFA9A8".toLowerCase();
 
 const LED_SERVICE = 'E95DD91D-251D-470A-A062-FA1922DFA9A8'.toLowerCase();
 const LED_STATE = 'E95D7B77-251D-470A-A062-FA1922DFA9A8'.toLowerCase();
@@ -50,11 +52,14 @@ async function pair() {
     console.log('getting service...');
     ioService = await server.getPrimaryService(IO_PIN_SERVICE);
     ledService = await server.getPrimaryService(LED_SERVICE);
+ 
     
     console.log('getting characteristics...');    
     pwmCharacteristic = await ioService.getCharacteristic(PWM_CHARACTERISTIC);
     ledCharacteristic = await ledService.getCharacteristic(LED_STATE);
-    
+    ioConfiguration = await  ioService.getCharacteristic(PIN_IO_CONFIGURATION);
+
+    ioPinData = await  ioService.getCharacteristic(IO_PIN_DATA);
     // toggle status icon & pair btn
     ['loading', 'success'].map(className => statusIcon.classList.toggle(className));
     statusIcon.title = 'microbit paired';
@@ -76,6 +81,12 @@ async function pair() {
     pairBtn.classList -= 'hidden';
     console.log(error);
   }
+
+  const view = new DataView(new ArrayBuffer(4));
+  for (let i = 0; i < 4; i ++) {
+    view.setUint8(i,0);
+  }
+  ioConfiguration.writeValue(view);
   
 }
 
@@ -176,12 +187,45 @@ async function setServoPosition(angles){
 }
 
 function writeDisplay(sequence, timeDelay){
+//  for(let i =0; i<sequence.length; i++){
+ //   setTimeout(() => {
+ //     ledDisplay(sequence[i]);
+  //  }, timeDelay*i);
+  //}
   for(let i =0; i<sequence.length; i++){
     setTimeout(() => {
-      ledDisplay(sequence[i]);
+      ledDisplay(1);
     }, timeDelay*i);
   }
+  ioToggle();
 }
+
+
+
+let toggle = 0;
+
+function ioToggle(){
+
+
+
+
+  const pinSet = new DataView(new ArrayBuffer(2));
+
+  if(toggle==0)
+  {
+    toggle = 1;
+  }
+  else{
+    toggle = 0;
+  }
+  pinSet.setUint8(0,2);
+  pinSet.setUint8(1,toggle);
+
+
+ 
+  ioPinData.writeValue(pinSet);
+}
+
 
 function ledDisplay(matrix){
   const view = new DataView(new ArrayBuffer(5));

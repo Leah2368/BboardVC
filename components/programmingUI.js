@@ -11,6 +11,7 @@ let defaultDisplay = [
   [0, 0, 0, 0, 0]
 ];
 
+
 let defaultServoSequence = [0, 0]; 
 
 // the form created for every label in the moel
@@ -96,7 +97,7 @@ class EventForm extends React.Component {
   }
 
   testBtnOnClick(e) {
-    e.preventDefault();
+   e.preventDefault();
     if (paired) {
       let fn =
         `servoSequence(${JSON.stringify(this.state.servoSequence)}, ${this.state.timeDelay});
@@ -131,7 +132,7 @@ class EventForm extends React.Component {
         <div className="header">
           {this.props.label != 'test' ?
             <label>When I receive <span className="ml-label">{this.props.label}</span></label>
-            : <label>Test your Microbit here!</label>
+            : <label> </label>
           }
           {this.props.label != 'test' && <button onClick={this.saveFunction} className="save-btn secondary">save</button>}
 
@@ -332,3 +333,4 @@ class TestBtn extends React.Component {
     )
   }
 }
+
