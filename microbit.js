@@ -82,11 +82,11 @@ async function pair() {
     console.log(error);
   }
 
-  const view = new DataView(new ArrayBuffer(4));
-  for (let i = 0; i < 4; i ++) {
-    view.setUint8(i,0);
-  }
-  ioConfiguration.writeValue(view);
+  //const view = new DataView(new ArrayBuffer(4));
+  //for (let i = 0; i < 4; i ++) {
+  //  view.setUint8(i,0);
+  //}
+  //ioConfiguration.writeValue(view);
   
 }
 
